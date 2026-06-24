@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load l10n %}
 {% block title %}Punto de encuentro — LibroLibre{% endblock %}
 {% block content %}
 <div class="form-container" style="text-align:center;">
@@ -17,11 +18,13 @@
 
 {% block extra_scripts %}
 <script>
-    var map = L.map('map').setView([{{ encuentro.latitud }}, {{ encuentro.longitud }}], 15);
+    var lat = {{ encuentro.latitud|unlocalize }};
+    var lng = {{ encuentro.longitud|unlocalize }};
+    var map = L.map('map').setView([lat, lng], 15);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
-    L.marker([{{ encuentro.latitud }}, {{ encuentro.longitud }}]).addTo(map)
+    L.marker([lat, lng]).addTo(map)
         .bindPopup('<strong>{{ encuentro.direccion|escapejs }}</strong><br>{{ encuentro.fecha_entrega|date:"d/m/Y" }} {{ encuentro.hora_entrega|time:"H:i" }}')
         .openPopup();
 </script>

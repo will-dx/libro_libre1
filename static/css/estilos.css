@@ -747,6 +747,8 @@ footer {
     overflow: hidden;
     border: 2px solid var(--border);
     box-shadow: var(--shadow-sm);
+    position: relative;
+    width: 100%;
 }
 
 .meeting-form {
@@ -847,6 +849,70 @@ footer {
 .tab-content { display: none; }
 .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
 
+/* ─── MENU HAMBURGUESA ─── */
+.menu-wrapper { position: relative; }
+.menu-toggle {
+    display: inline-flex;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: white;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 1.3rem;
+    line-height: 1;
+    transition: var(--transition);
+    align-items: center;
+    justify-content: center;
+}
+.menu-toggle:hover { background: rgba(255,255,255,0.2); }
+
+.menu-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 200px;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    overflow: hidden;
+    animation: fadeInScale 0.2s ease;
+}
+.menu-dropdown a, .menu-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.menu-dropdown a:hover, .menu-dropdown button:hover {
+    background: var(--bg);
+    color: var(--primary);
+}
+.menu-mobile-only { display: block; }
+.menu-logout-form { margin: 0; }
+.menu-logout-form button {
+    border-top: 1px solid var(--border);
+    color: var(--danger) !important;
+}
+.menu-logout-form button:hover {
+    background: #fff0f0 !important;
+}
+
+@media (min-width: 769px) {
+    .menu-mobile-only { display: none; }
+}
+
 /* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
     .hero h1 { font-size: 2.2rem; }
@@ -857,7 +923,7 @@ footer {
     .search-bar form { flex-direction: column; }
     .search-bar input[type="text"] { min-width: auto; width: 100%; }
     .search-bar select { width: 100%; }
-    .nav-links a { padding: 0.4rem 0.6rem; font-size: 0.8rem; }
+    .nav-link-desktop { display: none; }
 }
 @media (max-width: 480px) {
     .book-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }

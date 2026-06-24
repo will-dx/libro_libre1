@@ -1,7 +1,9 @@
+from itertools import chain
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from .forms import RegistroForm
+from solicitudes.models import Solicitud
 
 
 def registro(request):
@@ -20,4 +22,15 @@ def registro(request):
 
 @login_required
 def perfil(request):
-    return render(request, 'usuarios/perfil.html', {'usuario': request.user})
+    user = request.user
+    chats_recibidos = Solicitud.objects.filter(
+        propietario=user, estado__in=['aceptada', 'completada']
+    ).select_related('solicitante', 'libro').order_by('-fecha')
+    chats_realizados = Solicitud.objects.filter(
+        solicitante=user, estado__in=['aceptada', 'completada']
+    ).select_related('propietario', 'libro').order_by('-fecha')
+    chats = list(chain(chats_recibidos, chats_realizados))
+    return render(request, 'usuarios/perfil.html', {
+        'usuario': user,
+        'chats': chats,
+    })

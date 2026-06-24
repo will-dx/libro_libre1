@@ -9,6 +9,7 @@
 
     <div class="tabs">
         <button class="tab active" onclick="switchTab(event, 'mis-libros')">&#128218; Mis libros</button>
+        <button class="tab" onclick="switchTab(event, 'mensajes')">&#128172; Mensajes</button>
         <button class="tab" onclick="switchTab(event, 'recibidas')">&#128233; Recibidas</button>
         <button class="tab" onclick="switchTab(event, 'realizadas')">&#128228; Realizadas</button>
     </div>
@@ -42,6 +43,38 @@
             <a href="{% url 'crear_libro' %}" class="btn btn-accent mt-2">Publicar mi primer libro</a>
         </div>
         {% endif %}
+    </div>
+
+    <div id="mensajes" class="tab-content">
+        <h3>&#128172; Conversaciones activas</h3>
+        {% if chats %}
+            <div class="request-list">
+                {% for s in chats %}
+                <div class="request-item">
+                    <div>
+                        <strong>{{ s.libro.titulo }}</strong>
+                        <p class="text-muted">
+                            {% if user == s.propietario %}
+                                Con: {{ s.solicitante.username }}
+                            {% else %}
+                                Con: {{ s.propietario.username }}
+                            {% endif %}
+                            &middot; {{ s.get_estado_display }}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{% url 'chat' s.id %}" class="btn btn-primary btn-sm">&#128172; Ir al chat</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="icon">&#128172;</div>
+                <p>Aún no tienes conversaciones activas.</p>
+                <p class="text-muted">Cuando una solicitud sea aceptada, podrás chatear aquí.</p>
+            </div>
+            {% endif %}
     </div>
 
     <div id="recibidas" class="tab-content">
