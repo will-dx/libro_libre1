@@ -2,7 +2,8 @@ services:
   - type: web
     name: librolibre
     runtime: python
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput --no-post-process && python manage.py migrate && python manage.py crear_superuser
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput --no-post-process
+    preDeployCommand: python manage.py migrate && python manage.py crear_superuser
     startCommand: gunicorn librolibre.wsgi:application --workers 2 --timeout 120
     healthCheckPath: /
     envVars:

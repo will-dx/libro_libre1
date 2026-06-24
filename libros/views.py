@@ -36,9 +36,14 @@ def editar_libro(request, libro_id):
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES, instance=libro)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Libro actualizado.')
-            return redirect('detalle_libro', libro_id=libro.id)
+            try:
+                form.save()
+                messages.success(request, 'Libro actualizado.')
+                return redirect('detalle_libro', libro_id=libro.id)
+            except Exception:
+                messages.error(request, 'Error al subir la imagen o actualizar el libro. Intenta de nuevo.')
+        else:
+            messages.error(request, 'Corrige los errores del formulario.')
     else:
         form = BookForm(instance=libro)
     return render(request, 'libros/crear.html', {'form': form, 'editando': True})

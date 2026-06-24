@@ -55,9 +55,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'librolibre.wsgi.application'
 
+DATABASE_URL = config('DATABASE_URL', default='')
+if not DATABASE_URL:
+    raise ValueError(
+        "DATABASE_URL no está configurada en el entorno o archivo .env. "
+        "El uso de SQLite está estrictamente prohibido, incluso en desarrollo. "
+        "Por favor, configure una base de datos PostgreSQL en su archivo .env."
+    )
+
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
+        default=DATABASE_URL,
         conn_max_age=600,
         conn_health_checks=True,
     )
@@ -111,6 +119,7 @@ if USE_SUPABASE:
     AWS_S3_REGION_NAME = 'us-east-1'
     AWS_S3_FILE_OVERWRITE = False
     AWS_S3_SIGNATURE_VERSION = 's3v4'
+    AWS_S3_ADDRESSING_STYLE = 'path'
     AWS_QUERYSTRING_AUTH = True
     AWS_QUERYSTRING_EXPIRE = 86400
 
