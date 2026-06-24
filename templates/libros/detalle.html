@@ -2,19 +2,26 @@
 {% block title %}{{ libro.titulo }} — LibroLibre{% endblock %}
 {% block content %}
 <div class="book-detail">
-    <img src="{{ libro.imagen_url }}" alt="{{ libro.titulo }}">
+    <div class="detail-img">
+        <img src="{{ libro.imagen_url }}" alt="{{ libro.titulo }}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22><rect fill=%22%23ddd%22 width=%22300%22 height=%22400%22/><text fill=%22%23999%22 font-size=%2216%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22>Sin imagen</text></svg>'">
+    </div>
     <div class="book-info">
         <h2>{{ libro.titulo }}</h2>
-        <p class="meta">por {{ libro.autor }} | {{ libro.get_tipo_display }}</p>
-        <span class="badge {{ libro.estado }}">{{ libro.get_estado_display }}</span>
-        <p class="meta">Publicado por <a href="{% url 'perfil' %}">{{ libro.owner.username }}</a></p>
+        <p class="meta">por <strong>{{ libro.autor }}</strong></p>
+        <p class="meta">{{ libro.get_tipo_display }} &middot; 
+            <span class="badge {{ libro.estado }}">{{ libro.get_estado_display }}</span>
+        </p>
+        <p class="meta">Publicado por <strong>{{ libro.owner.username }}</strong></p>
         <div class="description">{{ libro.descripcion|linebreaks }}</div>
-        {% if user == libro.owner %}
-            <a href="{% url 'editar_libro' libro.id %}" class="btn-primary">Editar</a>
-            <a href="{% url 'eliminar_libro' libro.id %}" class="btn-danger">Eliminar</a>
-        {% elif user.is_authenticated and libro.estado == 'disponible' %}
-            <a href="{% url 'solicitar_libro' libro.id %}" class="btn-primary">Solicitar</a>
-        {% endif %}
+        <div class="actions">
+            {% if user == libro.owner %}
+                <a href="{% url 'editar_libro' libro.id %}" class="btn btn-accent">&#9998; Editar</a>
+                <a href="{% url 'eliminar_libro' libro.id %}" class="btn btn-danger">&#128465; Eliminar</a>
+            {% elif user.is_authenticated and libro.estado == 'disponible' %}
+                <a href="{% url 'solicitar_libro' libro.id %}" class="btn btn-primary btn-lg">&#128233; Solicitar</a>
+            {% endif %}
+            <a href="{% url 'home' %}" class="btn btn-ghost">&larr; Volver</a>
+        </div>
     </div>
 </div>
 {% endblock %}

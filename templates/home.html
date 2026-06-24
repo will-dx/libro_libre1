@@ -2,43 +2,55 @@
 {% block title %}Inicio — LibroLibre{% endblock %}
 {% block content %}
 <div class="hero">
-    <h1>LibroLibre</h1>
-    <p>Comparte libros académicos con tu comunidad universitaria</p>
+    <h1>Tu comunidad <span>lectora</span></h1>
+    <p>Comparte, presta y dona libros académicos con estudiantes de tu universidad</p>
 </div>
 
 <div class="search-bar">
     <form method="get" action="{% url 'home' %}">
-        <input type="text" name="q" placeholder="Buscar libros..." value="{{ query }}">
+        <input type="text" name="q" placeholder="Buscar por título o autor..." value="{{ query }}">
         <select name="tipo">
-            <option value="">Todos los tipos</option>
+            <option value="">Todos</option>
             <option value="prestamo" {% if filtro_tipo == 'prestamo' %}selected{% endif %}>Préstamo</option>
             <option value="donacion" {% if filtro_tipo == 'donacion' %}selected{% endif %}>Donación</option>
         </select>
         <select name="disponibilidad">
-            <option value="">Cualquier disponibilidad</option>
+            <option value="">Cualquier estado</option>
             <option value="disponible" {% if filtro_disp == 'disponible' %}selected{% endif %}>Disponible</option>
             <option value="no_disponible" {% if filtro_disp == 'no_disponible' %}selected{% endif %}>No disponible</option>
         </select>
-        <button type="submit">Buscar</button>
+        <button type="submit" class="btn btn-accent">Buscar</button>
     </form>
 </div>
 
 <div class="book-grid">
     {% for libro in libros %}
-        <div class="book-card">
+    <div class="book-card">
+        <div class="img-wrapper">
+            <img src="{{ libro.imagen_url }}" alt="{{ libro.titulo }}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%23ddd%22 width=%22200%22 height=%22200%22/><text fill=%22%23999%22 font-size=%2214%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22>Sin imagen</text></svg>'">
+            <span class="book-type-badge">{{ libro.get_tipo_display }}</span>
+        </div>
+        <div class="card-body">
             <a href="{% url 'detalle_libro' libro.id %}">
-                <img src="{{ libro.imagen_url }}" alt="{{ libro.titulo }}">
                 <h3>{{ libro.titulo }}</h3>
             </a>
-            <p>{{ libro.autor }}</p>
-            <p class="book-type">{{ libro.get_tipo_display }}</p>
+            <p class="author">{{ libro.autor }}</p>
+        </div>
+        <div class="card-footer">
             <span class="badge {{ libro.estado }}">{{ libro.get_estado_display }}</span>
             {% if user.is_authenticated and user != libro.owner and libro.estado == 'disponible' %}
-                <a href="{% url 'solicitar_libro' libro.id %}" class="btn-primary">Solicitar</a>
+                <a href="{% url 'solicitar_libro' libro.id %}" class="btn btn-primary btn-sm">Solicitar</a>
             {% endif %}
         </div>
+    </div>
     {% empty %}
-        <p>No hay libros disponibles.</p>
+    <div class="empty-state" style="grid-column: 1/-1;">
+        <div class="icon">&#128214;</div>
+        <p>No hay libros disponibles por ahora.</p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'crear_libro' %}" class="btn btn-accent mt-2">Publica el primero</a>
+        {% endif %}
+    </div>
     {% endfor %}
 </div>
 {% endblock %}

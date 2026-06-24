@@ -2,20 +2,23 @@
 {% block title %}{% if editando %}Editar{% else %}Publicar{% endif %} libro — LibroLibre{% endblock %}
 {% block content %}
 <div class="form-container">
-    <h2>{% if editando %}Editar libro{% else %}Publicar libro{% endif %}</h2>
+    <h2>{% if editando %}&#9998; Editar libro{% else %}&#128214; Publicar libro{% endif %}</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
-            <div class="form-group">
-                {{ field.label_tag }}
-                {{ field }}
-                {% if field.errors %}
-                    <div class="field-error">{{ field.errors|striptags }}</div>
-                {% endif %}
-            </div>
+        <div class="form-group">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+                <div class="field-error">&#9888; {{ field.errors|striptags }}</div>
+            {% endif %}
+            {% if field.help_text %}
+                <small class="text-muted">{{ field.help_text }}</small>
+            {% endif %}
+        </div>
         {% endfor %}
-        <button type="submit" class="btn-primary">
-            {% if editando %}Guardar cambios{% else %}Publicar{% endif %}
+        <button type="submit" class="btn btn-primary w-full mt-2">
+            {% if editando %}Guardar cambios{% else %}Publicar libro{% endif %}
         </button>
     </form>
 </div>

@@ -1,25 +1,28 @@
 {% extends 'base.html' %}
 {% block title %}Punto de encuentro — LibroLibre{% endblock %}
 {% block content %}
-<div class="form-container">
-    <h2>Punto de encuentro</h2>
+<div class="form-container" style="text-align:center;">
+    <h2>&#128205; Punto de encuentro</h2>
     <p><strong>Libro:</strong> {{ solicitud.libro.titulo }}</p>
     <p><strong>Dirección:</strong> {{ encuentro.direccion }}</p>
-    <p><strong>Fecha:</strong> {{ encuentro.fecha_entrega|date:"d/m/Y" }}</p>
-    <p><strong>Hora:</strong> {{ encuentro.hora_entrega|time:"H:i" }}</p>
+    <p><strong>Fecha:</strong> {{ encuentro.fecha_entrega|date:"d/m/Y" }} a las {{ encuentro.hora_entrega|time:"H:i" }}</p>
 </div>
 
 <div id="map" class="map-container" style="max-width: 600px; margin: 1rem auto;"></div>
+
+<div class="text-center mt-2">
+    <a href="{% url 'ver_solicitud' solicitud.id %}" class="btn btn-ghost">&larr; Volver a la solicitud</a>
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
     var map = L.map('map').setView([{{ encuentro.latitud }}, {{ encuentro.longitud }}], 15);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
     L.marker([{{ encuentro.latitud }}, {{ encuentro.longitud }}]).addTo(map)
-        .bindPopup('{{ encuentro.direccion|escapejs }}')
+        .bindPopup('<strong>{{ encuentro.direccion|escapejs }}</strong><br>{{ encuentro.fecha_entrega|date:"d/m/Y" }} {{ encuentro.hora_entrega|time:"H:i" }}')
         .openPopup();
 </script>
 {% endblock %}

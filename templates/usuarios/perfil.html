@@ -2,27 +2,103 @@
 {% block title %}Mi perfil — LibroLibre{% endblock %}
 {% block content %}
 <div class="profile-container">
-    <h2>{{ usuario.get_full_name|default:usuario.username }}</h2>
-    <p><strong>Usuario:</strong> {{ usuario.username }}</p>
-    <p><strong>Correo:</strong> {{ usuario.email }}</p>
+    <div class="profile-header">
+        <h2>&#128100; {{ usuario.get_full_name|default:usuario.username }}</h2>
+        <p>{{ usuario.email }} &middot; {{ usuario.book_set.count }} libro{{ usuario.book_set.count|pluralize:'s' }}</p>
+    </div>
 
-    <section class="profile-section">
-        <h3>Mis libros</h3>
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab(event, 'mis-libros')">&#128218; Mis libros</button>
+        <button class="tab" onclick="switchTab(event, 'recibidas')">&#128233; Recibidas</button>
+        <button class="tab" onclick="switchTab(event, 'realizadas')">&#128228; Realizadas</button>
+    </div>
+
+    <div id="mis-libros" class="tab-content active">
         {% if usuario.book_set.all %}
-            <div class="book-grid">
-                {% for libro in usuario.book_set.all %}
-                    <div class="book-card">
-                        <img src="{{ libro.imagen_url }}" alt="{{ libro.titulo }}">
-                        <h4>{{ libro.titulo }}</h4>
-                        <p>{{ libro.autor }}</p>
-                        <span class="badge {{ libro.estado }}">{{ libro.get_estado_display }}</span>
+        <div class="section-header">
+            <h3>Tus libros publicados</h3>
+            <a href="{% url 'crear_libro' %}" class="btn btn-accent btn-sm">+ Nuevo libro</a>
+        </div>
+        <div class="book-grid">
+            {% for libro in usuario.book_set.all %}
+            <div class="book-card">
+                <div class="img-wrapper">
+                    <img src="{{ libro.imagen_url }}" alt="{{ libro.titulo }}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%23ddd%22 width=%22200%22 height=%22200%22/><text fill=%22%23999%22 font-size=%2214%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22>Sin imagen</text></svg>'">
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'detalle_libro' libro.id %}"><h3>{{ libro.titulo }}</h3></a>
+                    <p class="author">{{ libro.autor }}</p>
+                </div>
+                <div class="card-footer">
+                    <span class="badge {{ libro.estado }}">{{ libro.get_estado_display }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">&#128218;</div>
+            <p>Aún no has publicado libros.</p>
+            <a href="{% url 'crear_libro' %}" class="btn btn-accent mt-2">Publicar mi primer libro</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div id="recibidas" class="tab-content">
+        <h3>Solicitudes recibidas</h3>
+        {% with recibidas=usuario.solicitudes_recibidas.all %}
+            {% if recibidas %}
+            <div class="request-list">
+                {% for s in recibidas %}
+                <div class="request-item">
+                    <div>
+                        <strong>{{ s.libro.titulo }}</strong>
+                        <p class="text-muted">{{ s.solicitante.username }} &middot; {{ s.fecha|date:"d/m/Y" }}</p>
                     </div>
+                    <div class="flex items-center gap-2">
+                        <span class="badge {{ s.estado }}">{{ s.get_estado_display }}</span>
+                        <a href="{% url 'ver_solicitud' s.id %}" class="btn btn-ghost btn-sm">Ver</a>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
-        {% else %}
-            <p>Aún no has publicado libros.</p>
-        {% endif %}
-        <a href="{% url 'crear_libro' %}" class="btn-primary">Publicar libro</a>
-    </section>
+            {% else %}
+            <div class="empty-state"><p>No tienes solicitudes recibidas.</p></div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div id="realizadas" class="tab-content">
+        <h3>Solicitudes realizadas</h3>
+        {% with realizadas=usuario.solicitudes_realizadas.all %}
+            {% if realizadas %}
+            <div class="request-list">
+                {% for s in realizadas %}
+                <div class="request-item">
+                    <div>
+                        <strong>{{ s.libro.titulo }}</strong>
+                        <p class="text-muted">{{ s.propietario.username }} &middot; {{ s.fecha|date:"d/m/Y" }}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="badge {{ s.estado }}">{{ s.get_estado_display }}</span>
+                        <a href="{% url 'ver_solicitud' s.id %}" class="btn btn-ghost btn-sm">Ver</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state"><p>No has realizado solicitudes.</p></div>
+            {% endif %}
+        {% endwith %}
+    </div>
 </div>
+
+<script>
+function switchTab(event, tabId) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+}
+</script>
 {% endblock %}

@@ -2,24 +2,35 @@
 {% block title %}Chat — LibroLibre{% endblock %}
 {% block content %}
 <div class="chat-container">
-    <div style="padding: 1rem; border-bottom: 1px solid #ddd; font-weight: 600;">
-        Chat sobre "{{ solicitud.libro.titulo }}" — {{ otro_usuario.username }}
+    <div class="chat-header">
+        &#128172; Chat sobre <strong>"{{ solicitud.libro.titulo }}"</strong>
+        <span style="margin-left: auto; font-size: 0.8rem; opacity: 0.7;">con {{ otro_usuario.username }}</span>
     </div>
     <div class="chat-messages" id="chat-messages">
         {% for msg in mensajes %}
-            <div class="chat-message {% if msg.remitente == user %}sent{% else %}received{% endif %}">
-                <div class="sender">{{ msg.remitente.username }}</div>
-                <div>{{ msg.contenido|linebreaks }}</div>
-                <div class="timestamp">{{ msg.fecha|date:"d/m/Y H:i" }}</div>
-            </div>
+        <div class="chat-message {% if msg.remitente == user %}sent{% else %}received{% endif %}">
+            <div class="sender">{{ msg.remitente.username }}</div>
+            <div class="content">{{ msg.contenido|linebreaks }}</div>
+            <div class="timestamp">{{ msg.fecha|date:"d/m/Y H:i" }}</div>
+        </div>
         {% empty %}
-            <p style="text-align: center; color: #999;">No hay mensajes todavía.</p>
+        <div class="empty-state">
+            <div class="icon">&#128172;</div>
+            <p>No hay mensajes todavía. ¡Escribe el primero!</p>
+        </div>
         {% endfor %}
     </div>
     <form method="post" class="chat-form">
         {% csrf_token %}
-        <input type="text" name="contenido" placeholder="Escribe un mensaje..." required>
-        <button type="submit" class="btn-primary">Enviar</button>
+        <input type="text" name="contenido" placeholder="Escribe un mensaje..." required autofocus>
+        <button type="submit" class="btn btn-primary">&#10148;</button>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var container = document.getElementById('chat-messages');
+    container.scrollTop = container.scrollHeight;
+});
+</script>
 {% endblock %}

@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 {% block title %}Eliminar libro — LibroLibre{% endblock %}
 {% block content %}
-<div class="form-container">
-    <h2>Eliminar libro</h2>
-    <p>¿Estás seguro de eliminar <strong>{{ libro.titulo }}</strong>?</p>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn-danger">Eliminar</button>
-        <a href="{% url 'detalle_libro' libro.id %}" class="btn-primary">Cancelar</a>
-    </form>
+<div class="form-container confirm-delete">
+    <h2>&#9888; Eliminar libro</h2>
+    <p>¿Estás seguro de eliminar <strong>"{{ libro.titulo }}"</strong>?</p>
+    <p class="text-muted">Esta acción no se puede deshacer.</p>
+    <div class="actions mt-3">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">&#128465; Eliminar</button>
+        </form>
+        <a href="{% url 'detalle_libro' libro.id %}" class="btn btn-ghost">Cancelar</a>
+    </div>
 </div>
 {% endblock %}
