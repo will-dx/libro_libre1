@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Crear punto de encuentro — LibroLibre{% endblock %}
+{% block content %}
+<div class="meeting-form">
+    <h2>Crear punto de encuentro</h2>
+    <p>Selecciona la ubicación en el mapa para coordinar la entrega de "{{ solicitud.libro.titulo }}"</p>
+
+    <div id="map" class="map-container"></div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Latitud</label>
+            <input type="text" name="latitud" id="latitud" readonly required>
+        </div>
+        <div class="form-group">
+            <label>Longitud</label>
+            <input type="text" name="longitud" id="longitud" readonly required>
+        </div>
+        <div class="form-group">
+            <label>Dirección</label>
+            <input type="text" name="direccion" id="direccion" readonly>
+        </div>
+        <div class="form-group">
+            <label>Fecha de entrega</label>
+            <input type="date" name="fecha_entrega" required>
+        </div>
+        <div class="form-group">
+            <label>Hora de entrega</label>
+            <input type="time" name="hora_entrega" required>
+        </div>
+        <button type="submit" class="btn-primary">Guardar punto de encuentro</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    var map = L.map('map').setView([4.5709, -74.2973], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var marker = L.marker([4.5709, -74.2973], {draggable: true}).addTo(map);
+
+    function updateCoords(lat, lng) {
+        document.getElementById('latitud').value = lat.toFixed(6);
+        document.getElementById('longitud').value = lng.toFixed(6);
+        fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng)
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('direccion').value = data.display_name || '';
+            })
+            .catch(() => {});
+    }
+
+    marker.on('dragend', function() {
+        var latlng = marker.getLatLng();
+        updateCoords(latlng.lat, latlng.lng);
+    });
+
+    map.on('click', function(e) {
+        marker.setLatLng(e.latlng);
+        updateCoords(e.latlng.lat, e.latlng.lng);
+    });
+
+    updateCoords(4.5709, -74.2973);
+</script>
+{% endblock %}

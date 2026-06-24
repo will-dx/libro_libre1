@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Chat — LibroLibre{% endblock %}
+{% block content %}
+<div class="chat-container">
+    <div style="padding: 1rem; border-bottom: 1px solid #ddd; font-weight: 600;">
+        Chat sobre "{{ solicitud.libro.titulo }}" — {{ otro_usuario.username }}
+    </div>
+    <div class="chat-messages" id="chat-messages">
+        {% for msg in mensajes %}
+            <div class="chat-message {% if msg.remitente == user %}sent{% else %}received{% endif %}">
+                <div class="sender">{{ msg.remitente.username }}</div>
+                <div>{{ msg.contenido|linebreaks }}</div>
+                <div class="timestamp">{{ msg.fecha|date:"d/m/Y H:i" }}</div>
+            </div>
+        {% empty %}
+            <p style="text-align: center; color: #999;">No hay mensajes todavía.</p>
+        {% endfor %}
+    </div>
+    <form method="post" class="chat-form">
+        {% csrf_token %}
+        <input type="text" name="contenido" placeholder="Escribe un mensaje..." required>
+        <button type="submit" class="btn-primary">Enviar</button>
+    </form>
+</div>
+{% endblock %}

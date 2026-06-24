@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: librolibre
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn librolibre.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        value: .onrender.com,localhost,127.0.0.1
+      - key: DATABASE_URL
+        fromDatabase:
+          name: librolibre-db
+          property: connectionString
+      - key: SUPABASE_ACCESS_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: SUPABASE_BUCKET
+        sync: false
+      - key: SUPABASE_ENDPOINT_URL
+        sync: false
+
+databases:
+  - name: librolibre-db
+    databaseName: librolibre
+    plan: free

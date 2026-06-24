@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Mi perfil — LibroLibre{% endblock %}
+{% block content %}
+<div class="profile-container">
+    <h2>{{ usuario.get_full_name|default:usuario.username }}</h2>
+    <p><strong>Usuario:</strong> {{ usuario.username }}</p>
+    <p><strong>Correo:</strong> {{ usuario.email }}</p>
+
+    <section class="profile-section">
+        <h3>Mis libros</h3>
+        {% if usuario.book_set.all %}
+            <div class="book-grid">
+                {% for libro in usuario.book_set.all %}
+                    <div class="book-card">
+                        <img src="{{ libro.imagen_url }}" alt="{{ libro.titulo }}">
+                        <h4>{{ libro.titulo }}</h4>
+                        <p>{{ libro.autor }}</p>
+                        <span class="badge {{ libro.estado }}">{{ libro.get_estado_display }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Aún no has publicado libros.</p>
+        {% endif %}
+        <a href="{% url 'crear_libro' %}" class="btn-primary">Publicar libro</a>
+    </section>
+</div>
+{% endblock %}

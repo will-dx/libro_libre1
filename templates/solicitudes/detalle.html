@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Solicitud — LibroLibre{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h2>Solicitud de "{{ solicitud.libro.titulo }}"</h2>
+    <p><strong>Solicitante:</strong> {{ solicitud.solicitante.username }}</p>
+    <p><strong>Propietario:</strong> {{ solicitud.propietario.username }}</p>
+    <p><strong>Estado:</strong> <span class="badge {{ solicitud.estado }}">{{ solicitud.get_estado_display }}</span></p>
+    <p><strong>Fecha:</strong> {{ solicitud.fecha|date:"d/m/Y H:i" }}</p>
+
+    <div class="actions" style="margin-top: 1rem;">
+        {% if solicitud.estado == 'pendiente' and user == solicitud.propietario %}
+            <a href="{% url 'aceptar_solicitud' solicitud.id %}" class="btn-primary">Aceptar</a>
+            <a href="{% url 'rechazar_solicitud' solicitud.id %}" class="btn-danger">Rechazar</a>
+        {% elif solicitud.estado == 'pendiente' and user == solicitud.solicitante %}
+            <a href="{% url 'cancelar_solicitud' solicitud.id %}" class="btn-danger">Cancelar solicitud</a>
+        {% elif solicitud.estado == 'aceptada' %}
+            <a href="{% url 'chat' solicitud.id %}" class="btn-primary">Ir al chat</a>
+            {% if user == solicitud.propietario %}
+                <a href="{% url 'crear_encuentro' solicitud.id %}" class="btn-primary">Crear punto de encuentro</a>
+                <a href="{% url 'completar_solicitud' solicitud.id %}" class="btn-primary">Marcar como completada</a>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

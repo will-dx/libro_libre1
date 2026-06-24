@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Inicio — LibroLibre{% endblock %}
+{% block content %}
+<div class="hero">
+    <h1>LibroLibre</h1>
+    <p>Comparte libros académicos con tu comunidad universitaria</p>
+</div>
+
+<div class="search-bar">
+    <form method="get" action="{% url 'home' %}">
+        <input type="text" name="q" placeholder="Buscar libros..." value="{{ query }}">
+        <select name="tipo">
+            <option value="">Todos los tipos</option>
+            <option value="prestamo" {% if filtro_tipo == 'prestamo' %}selected{% endif %}>Préstamo</option>
+            <option value="donacion" {% if filtro_tipo == 'donacion' %}selected{% endif %}>Donación</option>
+        </select>
+        <select name="disponibilidad">
+            <option value="">Cualquier disponibilidad</option>
+            <option value="disponible" {% if filtro_disp == 'disponible' %}selected{% endif %}>Disponible</option>
+            <option value="no_disponible" {% if filtro_disp == 'no_disponible' %}selected{% endif %}>No disponible</option>
+        </select>
+        <button type="submit">Buscar</button>
+    </form>
+</div>
+
+<div class="book-grid">
+    {% for libro in libros %}
+        <div class="book-card">
+            <a href="{% url 'detalle_libro' libro.id %}">
+                <img src="{{ libro.imagen_url }}" alt="{{ libro.titulo }}">
+                <h3>{{ libro.titulo }}</h3>
+            </a>
+            <p>{{ libro.autor }}</p>
+            <p class="book-type">{{ libro.get_tipo_display }}</p>
+            <span class="badge {{ libro.estado }}">{{ libro.get_estado_display }}</span>
+            {% if user.is_authenticated and user != libro.owner and libro.estado == 'disponible' %}
+                <a href="{% url 'solicitar_libro' libro.id %}" class="btn-primary">Solicitar</a>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No hay libros disponibles.</p>
+    {% endfor %}
+</div>
+{% endblock %}

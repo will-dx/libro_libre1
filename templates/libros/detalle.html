@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}{{ libro.titulo }} — LibroLibre{% endblock %}
+{% block content %}
+<div class="book-detail">
+    <img src="{{ libro.imagen_url }}" alt="{{ libro.titulo }}">
+    <div class="book-info">
+        <h2>{{ libro.titulo }}</h2>
+        <p class="meta">por {{ libro.autor }} | {{ libro.get_tipo_display }}</p>
+        <span class="badge {{ libro.estado }}">{{ libro.get_estado_display }}</span>
+        <p class="meta">Publicado por <a href="{% url 'perfil' %}">{{ libro.owner.username }}</a></p>
+        <div class="description">{{ libro.descripcion|linebreaks }}</div>
+        {% if user == libro.owner %}
+            <a href="{% url 'editar_libro' libro.id %}" class="btn-primary">Editar</a>
+            <a href="{% url 'eliminar_libro' libro.id %}" class="btn-danger">Eliminar</a>
+        {% elif user.is_authenticated and libro.estado == 'disponible' %}
+            <a href="{% url 'solicitar_libro' libro.id %}" class="btn-primary">Solicitar</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

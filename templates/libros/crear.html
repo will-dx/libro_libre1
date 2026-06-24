@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}{% if editando %}Editar{% else %}Publicar{% endif %} libro — LibroLibre{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h2>{% if editando %}Editar libro{% else %}Publicar libro{% endif %}</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="field-error">{{ field.errors|striptags }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn-primary">
+            {% if editando %}Guardar cambios{% else %}Publicar{% endif %}
+        </button>
+    </form>
+</div>
+{% endblock %}
