@@ -84,7 +84,16 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
-# --- Supabase Storage (S3-compatible) ---
+# --- File Storage ---
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
+
 USE_SUPABASE = all([
     config('SUPABASE_ACCESS_KEY', default=''),
     config('SUPABASE_SECRET_KEY', default=''),
