@@ -104,27 +104,8 @@ STORAGES = {
     },
 }
 
-USE_SUPABASE = all([
-    config('SUPABASE_ACCESS_KEY', default=''),
-    config('SUPABASE_SECRET_KEY', default=''),
-    config('SUPABASE_BUCKET', default=''),
-    config('SUPABASE_ENDPOINT_URL', default=''),
-])
+# Desactivamos Supabase y usamos almacenamiento local (Sistemas de archivos de Render)
+USE_SUPABASE = False
 
-if USE_SUPABASE:
-    AWS_ACCESS_KEY_ID = config('SUPABASE_ACCESS_KEY')
-    AWS_SECRET_ACCESS_KEY = config('SUPABASE_SECRET_KEY')
-    AWS_STORAGE_BUCKET_NAME = config('SUPABASE_BUCKET')
-    AWS_S3_ENDPOINT_URL = config('SUPABASE_ENDPOINT_URL')
-    AWS_S3_REGION_NAME = 'us-east-1'
-    AWS_S3_FILE_OVERWRITE = False
-    AWS_S3_SIGNATURE_VERSION = 's3v4'
-    AWS_S3_ADDRESSING_STYLE = 'path'
-    AWS_QUERYSTRING_AUTH = True
-    AWS_QUERYSTRING_EXPIRE = 86400
-
-    STORAGES['default'] = {'BACKEND': 'storages.backends.s3.S3Storage'}
-    MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'
-else:
-    MEDIA_URL = config('MEDIA_URL', default='/media/')
-    MEDIA_ROOT = config('MEDIA_ROOT', default=str(BASE_DIR / 'media'))
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
