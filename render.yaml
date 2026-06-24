@@ -2,8 +2,9 @@ services:
   - type: web
     name: librolibre
     runtime: python
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
-    startCommand: gunicorn librolibre.wsgi:application
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+    startCommand: gunicorn librolibre.wsgi:application --workers 2 --timeout 120
+    healthCheckPath: /
     envVars:
       - key: SECRET_KEY
         generateValue: true
