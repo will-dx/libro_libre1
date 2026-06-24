@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Notificaciones — LibroLibre{% endblock %}
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h2>&#128276; Notificaciones</h2>
+        <p>{{ notificaciones.count }} en total</p>
+    </div>
+
+    {% if notificaciones %}
+        <div class="section-header">
+            <div></div>
+            <button onclick="marcarTodoLeido()" class="btn btn-ghost btn-sm">Marcar todo leído</button>
+        </div>
+        <div class="request-list">
+            {% for n in notificaciones %}
+            <a href="{{ n.enlace }}" class="request-item" style="text-decoration:none;color:inherit;{% if not n.leido %}border-left:4px solid var(--accent);background:#fffcf0;{% endif %}" onclick="marcarLeido({{ n.id }})">
+                <div>
+                    <strong>{{ n.get_tipo_display }}</strong>
+                    <p>{{ n.mensaje }}</p>
+                    <small class="text-muted">{{ n.fecha|date:"d/m/Y H:i" }}</small>
+                </div>
+                {% if not n.leido %}
+                    <span class="badge pendiente">Nueva</span>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="icon">&#128276;</div>
+            <p>No tienes notificaciones.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

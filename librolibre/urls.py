@@ -37,6 +37,7 @@ urlpatterns = [
     path('solicitudes/', include('solicitudes.urls')),
     path('mensajes/', include('mensajes.urls')),
     path('encuentros/', include('encuentros.urls')),
+    path('notificaciones/', include('notificaciones.urls')),
 ]
 
 if not settings.USE_SUPABASE:

@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Solicitud
 from libros.models import Book
+from notificaciones.utils import crear_notificacion
 
 
 @login_required
@@ -18,10 +19,16 @@ def solicitar_libro(request, libro_id):
         messages.error(request, 'Ya tienes una solicitud pendiente para este libro.')
         return redirect('detalle_libro', libro_id=libro.id)
 
-    Solicitud.objects.create(
+    solicitud = Solicitud.objects.create(
         solicitante=request.user,
         libro=libro,
         propietario=libro.owner,
+    )
+    crear_notificacion(
+        libro.owner,
+        'solicitud',
+        f'{request.user.username} solicitó "{libro.titulo}"',
+        f'/solicitudes/solicitud/{solicitud.id}/',
     )
     messages.success(request, 'Solicitud enviada. Espera la respuesta del propietario.')
     return redirect('detalle_libro', libro_id=libro.id)
@@ -32,6 +39,12 @@ def aceptar_solicitud(request, solicitud_id):
     solicitud = get_object_or_404(Solicitud, id=solicitud_id, propietario=request.user, estado='pendiente')
     solicitud.estado = 'aceptada'
     solicitud.save()
+    crear_notificacion(
+        solicitud.solicitante,
+        'aceptada',
+        f'{request.user.username} aceptó tu solicitud de "{solicitud.libro.titulo}"',
+        f'/solicitudes/solicitud/{solicitud.id}/',
+    )
     messages.success(request, 'Solicitud aceptada. El chat está habilitado.')
     return redirect('ver_solicitud', solicitud_id=solicitud.id)
 
@@ -41,6 +54,12 @@ def rechazar_solicitud(request, solicitud_id):
     solicitud = get_object_or_404(Solicitud, id=solicitud_id, propietario=request.user, estado='pendiente')
     solicitud.estado = 'rechazada'
     solicitud.save()
+    crear_notificacion(
+        solicitud.solicitante,
+        'rechazada',
+        f'{request.user.username} rechazó tu solicitud de "{solicitud.libro.titulo}"',
+        f'/solicitudes/solicitud/{solicitud.id}/',
+    )
     messages.success(request, 'Solicitud rechazada.')
     return redirect('perfil')
 
@@ -50,6 +69,12 @@ def cancelar_solicitud(request, solicitud_id):
     solicitud = get_object_or_404(Solicitud, id=solicitud_id, solicitante=request.user, estado='pendiente')
     solicitud.estado = 'cancelada'
     solicitud.save()
+    crear_notificacion(
+        solicitud.propietario,
+        'cancelada',
+        f'{request.user.username} canceló su solicitud de "{solicitud.libro.titulo}"',
+        f'/solicitudes/solicitud/{solicitud.id}/',
+    )
     messages.success(request, 'Solicitud cancelada.')
     return redirect('perfil')
 
@@ -61,6 +86,12 @@ def completar_solicitud(request, solicitud_id):
     solicitud.save()
     solicitud.libro.estado = 'no_disponible'
     solicitud.libro.save()
+    crear_notificacion(
+        solicitud.solicitante,
+        'completada',
+        f'El libro "{solicitud.libro.titulo}" fue marcado como entregado',
+        f'/solicitudes/solicitud/{solicitud.id}/',
+    )
     messages.success(request, 'Solicitud marcada como completada.')
     return redirect('perfil')
 

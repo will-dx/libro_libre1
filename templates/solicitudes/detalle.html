@@ -9,6 +9,13 @@
     <p><strong>Estado:</strong> <span class="badge {{ solicitud.estado }}">{{ solicitud.get_estado_display }}</span></p>
     <p><strong>Fecha:</strong> {{ solicitud.fecha|date:"d/m/Y H:i" }}</p>
 
+    {% if solicitud.estado == 'aceptada' and solicitud.punto_encuentro %}
+    <hr style="margin:1rem 0;border:none;border-top:1px solid var(--border);">
+    <p><strong>&#128205; Punto de encuentro:</strong></p>
+    <p>{{ solicitud.punto_encuentro.direccion|truncatechars:60 }}</p>
+    <p>{{ solicitud.punto_encuentro.fecha_entrega|date:"d/m/Y" }} a las {{ solicitud.punto_encuentro.hora_entrega|time:"H:i" }}</p>
+    {% endif %}
+
     <div class="actions mt-3">
         {% if solicitud.estado == 'pendiente' and user == solicitud.propietario %}
             <a href="{% url 'aceptar_solicitud' solicitud.id %}" class="btn btn-primary">&#10003; Aceptar</a>
@@ -17,8 +24,12 @@
             <a href="{% url 'cancelar_solicitud' solicitud.id %}" class="btn btn-danger">&#10007; Cancelar solicitud</a>
         {% elif solicitud.estado == 'aceptada' %}
             <a href="{% url 'chat' solicitud.id %}" class="btn btn-primary">&#128172; Ir al chat</a>
-            {% if user == solicitud.propietario %}
+            {% if solicitud.punto_encuentro %}
+                <a href="{% url 'ver_encuentro' solicitud.id %}" class="btn btn-accent">&#128205; Ver punto de encuentro</a>
+            {% elif user == solicitud.propietario %}
                 <a href="{% url 'crear_encuentro' solicitud.id %}" class="btn btn-accent">&#128205; Crear punto de encuentro</a>
+            {% endif %}
+            {% if user == solicitud.propietario and not solicitud.punto_encuentro %}
                 <a href="{% url 'completar_solicitud' solicitud.id %}" class="btn btn-primary">&#9989; Marcar completada</a>
             {% endif %}
         {% endif %}
