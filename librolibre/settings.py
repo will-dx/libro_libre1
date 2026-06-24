@@ -83,9 +83,9 @@ TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = config('STATIC_URL', default='/static/')
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = config('STATIC_ROOT', default=str(BASE_DIR / 'staticfiles'))
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -126,5 +126,5 @@ if USE_SUPABASE:
     STORAGES['default'] = {'BACKEND': 'storages.backends.s3.S3Storage'}
     MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'
 else:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
+    MEDIA_URL = config('MEDIA_URL', default='/media/')
+    MEDIA_ROOT = config('MEDIA_ROOT', default=str(BASE_DIR / 'media'))
