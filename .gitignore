@@ -5,6 +5,7 @@ __pycache__/
 *.pyo
 db.sqlite3
 staticfiles/
+!staticfiles/.gitkeep
 media/
 .DS_Store
 Thumbs.db
